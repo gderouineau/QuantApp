@@ -1,0 +1,201 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="7">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+            <item index="6" class="java.lang.String" itemvalue="hr" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="32">
+            <item index="0" class="java.lang.String" itemvalue="psycopg2-binary" />
+            <item index="1" class="java.lang.String" itemvalue="Django" />
+            <item index="2" class="java.lang.String" itemvalue="asgiref" />
+            <item index="3" class="java.lang.String" itemvalue="PyJWT" />
+            <item index="4" class="java.lang.String" itemvalue="cffi" />
+            <item index="5" class="java.lang.String" itemvalue="fontawesomefree" />
+            <item index="6" class="java.lang.String" itemvalue="defusedxml" />
+            <item index="7" class="java.lang.String" itemvalue="pycparser" />
+            <item index="8" class="java.lang.String" itemvalue="requests" />
+            <item index="9" class="java.lang.String" itemvalue="django-google-fonts" />
+            <item index="10" class="java.lang.String" itemvalue="django-payments" />
+            <item index="11" class="java.lang.String" itemvalue="sqlparse" />
+            <item index="12" class="java.lang.String" itemvalue="django-bootstrap-icons" />
+            <item index="13" class="java.lang.String" itemvalue="requests-oauthlib" />
+            <item index="14" class="java.lang.String" itemvalue="django-meta" />
+            <item index="15" class="java.lang.String" itemvalue="certifi" />
+            <item index="16" class="java.lang.String" itemvalue="oauthlib" />
+            <item index="17" class="java.lang.String" itemvalue="phonenumberslite" />
+            <item index="18" class="java.lang.String" itemvalue="stripe" />
+            <item index="19" class="java.lang.String" itemvalue="soupsieve" />
+            <item index="20" class="java.lang.String" itemvalue="django-phonenumber-field" />
+            <item index="21" class="java.lang.String" itemvalue="urllib3" />
+            <item index="22" class="java.lang.String" itemvalue="phonenumbers" />
+            <item index="23" class="java.lang.String" itemvalue="cryptography" />
+            <item index="24" class="java.lang.String" itemvalue="python3-openid" />
+            <item index="25" class="java.lang.String" itemvalue="dj-stripe" />
+            <item index="26" class="java.lang.String" itemvalue="typing_extensions" />
+            <item index="27" class="java.lang.String" itemvalue="charset-normalizer" />
+            <item index="28" class="java.lang.String" itemvalue="django-allauth" />
+            <item index="29" class="java.lang.String" itemvalue="django-bootstrap-v5" />
+            <item index="30" class="java.lang.String" itemvalue="webencodings" />
+            <item index="31" class="java.lang.String" itemvalue="Pillow" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E303" />
+          <option value="E302" />
+          <option value="E402" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypedDictInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="shop.models.Category.*" />
+          <option value="API.models.Symbol.objects" />
+          <option value="API.models.BollingerBand.objects" />
+          <option value="API.models.Combo.objects" />
+          <option value="API.models.CandleKind.objects" />
+          <option value="API.models.MovingAverage.objects" />
+          <option value="API.models.MACDZR.objects" />
+          <option value="API.models.Name.objects" />
+          <option value="API.models.Period.objects" />
+          <option value="notifications.models.Subscription.objects" />
+          <option value="notifications.models.Main.objects" />
+          <option value="django.db.models.fields.related.OneToOneField.period" />
+          <option value="django.db.models.fields.related.OneToOneField.date_market" />
+          <option value="notifications.models.Notification.objects" />
+          <option value="API.models.Symbol.bollinger_bands" />
+          <option value="API.models.Symbol.MACDZRs" />
+          <option value="API.models.Symbol.moving_averages" />
+          <option value="API.models.Category.objects" />
+          <option value="API.models.TradingAccount.objects" />
+          <option value="notifications.models.Notification.position" />
+          <option value="stats.models.Position.objects" />
+          <option value="stats.models.CustomStats.objects" />
+          <option value="stats.models.Position.notification" />
+          <option value="stats.models.AutomaticStats.objects" />
+          <option value="django.db.models.fields.IntegerField.__add__" />
+          <option value="customer_management.models.Customer.*" />
+          <option value="customer_management.models.Action.objects" />
+          <option value="programs.models.Program.*" />
+          <option value="programs.models.Section.*" />
+          <option value="programs.models.Content.*" />
+          <option value="programs.models.Module.*" />
+          <option value="subscriptions.models.Subscription.*" />
+          <option value="django.db.models.fields.related.ForeignKey.id" />
+          <option value="subscriptions.models.ContentProgress.objects" />
+          <option value="subscriptions.models.ModuleProgress.objects" />
+          <option value="subscriptions.models.ProgramProgress.objects" />
+          <option value="selling_page.models.Page.*" />
+          <option value="selling_page.models.Pack.*" />
+          <option value="selling_page.models.Listing.*" />
+          <option value="selling_page.models.Content.*" />
+          <option value="selling_page.models.SubCategory.*" />
+          <option value="selling_page.models.MainCategory.*" />
+          <option value="ressources.models.Book.objects" />
+          <option value="questionnaire.models.Question.objects" />
+          <option value="questionnaire.models.Questionnaire.id" />
+          <option value="questionnaire.models.Questionnaire.objects" />
+          <option value="questionnaire.models.Answer.*" />
+          <option value="django.views.generic.base.View.get_form_kwargs" />
+          <option value="questionnaire.models.Prospect.*" />
+          <option value="blocs.models.Page.*" />
+          <option value="blocs.models.Bloc.*" />
+          <option value="menu.models.Menu.*" />
+          <option value="menu.models.SubMenu.objects" />
+          <option value="django.db.models.fields.files.ImageField.*" />
+          <option value="category.models.Category.*" />
+          <option value="questionnaire.models.Comments.*" />
+          <option value="administration_menu.models.MenuItem.*" />
+          <option value="pages.models.Page.*" />
+          <option value="administration_pages.models.Page.*" />
+          <option value="administration_pages.models.Bloc.*" />
+          <option value="administration_pages.models.Margin.*" />
+          <option value="administration_pages.models.Padding.*" />
+          <option value="administration.models.WebSite.*" />
+          <option value="administration.models.Font.*" />
+          <option value="administration_pages.models.Content.*" />
+          <option value="administration.models.Logo.*" />
+          <option value="administration_pages.models.Metadata.objects" />
+          <option value="administration_pages.models.CSSParameters.*" />
+          <option value="administration_pages.models.Line.*" />
+          <option value="jeiko.jeiko.models.WebSite.*" />
+          <option value="views.*" />
+          <option value="urls.*" />
+          <option value="forms.*" />
+          <option value="admin.*" />
+          <option value="templatetags.menu_extra.*" />
+          <option value="users.models.FirstNameBase.*" />
+          <option value="users.models.LastNameBase.*" />
+          <option value="users.models.UserBase.*" />
+          <option value="email_service.models.EmailProvider.*" />
+          <option value="email_service.models.Email.*" />
+          <option value="jeiko.questionnaires.models.Questionnaire.*" />
+          <option value="jeiko.questionnaires.models.Prospect.*" />
+          <option value="jeiko.questionnaires.models.Comments.*" />
+          <option value="jeiko.questionnaires.models.Question.*" />
+          <option value="jeiko.questionnaires.models.AnswerChoices.*" />
+          <option value="jeiko.questionnaires.models.Answer.*" />
+          <option value="jeiko.administration_pages.models.Page.*" />
+          <option value="jeiko.administration_pages.models.Category.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertTest.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertProfileType.*" />
+          <option value="jeiko.administration_pages.models.Metadata.*" />
+          <option value="jeiko.administration_pages.models.Line.*" />
+          <option value="jeiko.administration_pages.models.Margin.*" />
+          <option value="jeiko.administration_pages.models.Padding.*" />
+          <option value="jeiko.administration_pages.models.Content.*" />
+          <option value="jeiko.administration_pages.models.CSSParameters.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertAnswer.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertProfileCombination.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertProfileRule.*" />
+          <option value="jeiko.administration_menu.models.MenuItem.*" />
+          <option value="jeiko.questionnaires_expert.models.Prospect.*" />
+          <option value="jeiko.administration_pages.models.Bloc.*" />
+          <option value="jeiko.administration_pages.models.StyleBox.*" />
+          <option value="jeiko.administration_pages.models.ImageContent.*" />
+          <option value="jeiko.administration_pages.models.Section.*" />
+          <option value="jeiko.calendars.models.GoogleCalendarConfig.*" />
+          <option value="jeiko.calendars.models.Availability.*" />
+          <option value="jeiko.calendars.models.Appointment.*" />
+          <option value="jeiko.calendars.models.Slot.*" />
+          <option value="jeiko.users.models.Profile.*" />
+          <option value="jeiko.administration.models.WebSite.*" />
+          <option value="jeiko.administration.models.MailSettings.*" />
+          <option value="jeiko.questionnaires_expert.models.ExpertQuestion.*" />
+          <option value="jeiko.administration_menu.models.Menu.*" />
+          <option value="jeiko.administration.models.Font.*" />
+          <option value="jeiko.users.models.Role.*" />
+          <option value="jeiko.administration_pages.models.Size.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

@@ -1,0 +1,22 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<h2 class="main-title">Ingestion — derniers runs</h2>
+<table class="table">
+  <thead><tr><th>Source</th><th>TF</th><th>Start</th><th>End</th><th>OK</th><th>KO</th><th>ms</th></tr></thead>
+  <tbody>
+    {% for r in runs %}
+    <tr>
+      <td>{{ r.source }}</td>
+      <td>{{ r.timeframe }}</td>
+      <td>{{ r.started_at }}</td>
+      <td>{{ r.finished_at|default:"—" }}</td>
+      <td>{{ r.ok_count }}</td>
+      <td>{{ r.fail_count }}</td>
+      <td>{{ r.duration_ms }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">Aucun run.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

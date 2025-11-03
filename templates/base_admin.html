@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>{% block head_title %}Admin — QuantApp{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'core/admin.css' %}">
+
+    <!-- Alpine.js + HTMX (CDN ; à auto-héberger plus tard si besoin) -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body x-data="{ sidebar:false }" class="admin">
+    <!-- Topbar -->
+    <header class="topbar">
+        <button class="burger" @click="sidebar = !sidebar" aria-label="Menu" :aria-expanded="sidebar.toString()">
+            ☰
+        </button>
+        <a href="/" class="brand">QuantApp</a>
+        <nav class="topnav">
+            <a href="/market-data/status/">Ingestion</a>
+            <a href="/market-data/chart/">Graphiques</a>
+        </nav>
+        <div class="top-actions">
+            {% if request.user.is_authenticated %}
+                <span class="user">{{ request.user.username }}</span>
+                <a class="btn" href="{% url 'account_logout' %}">Déconnexion</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" :class="sidebar ? 'is-open' : ''">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Données marchés</div>
+                <a href="/market-data/status/">Statut ingestion</a>
+                <a href="/market-data/chart/">Chart interactif</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Administration</div>
+                <a href="{% url 'admin:index' %}">Django Admin</a>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="content">
+            <!-- Breadcrumbs -->
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="/">Accueil</a></li>
+                    {% block breadcrumbs %}{% endblock %}
+                </ol>
+                <div class="page-actions">
+                    {% block page_actions %}{% endblock %}
+                </div>
+            </nav>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="msg {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Page content -->
+            <section class="page">
+                {% block content %}
+                <p>Contenu…</p>
+                {% endblock %}
+            </section>
+        </main>
+    </div>
+
+    <!-- HTMX CSRF helper -->
+    <script>
+        (function(){
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            document.body.addEventListener('htmx:configRequest', (event) => {
+                const token = getCookie('csrftoken');
+                if (token) event.detail.headers['X-CSRFToken'] = token;
+            });
+        })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>{% block title %}QuantApp{% endblock %}</title>
+        <link rel="stylesheet" href="/static/css/app.css">
+    </head>
+    <body>
+        <header style="padding:12px;border-bottom:1px solid #ddd;display:flex;gap:16px;align-items:center">
+            <a href="/" style="font-weight:600">QuantApp</a>
+            <nav style="margin-left:auto;display:flex;gap:12px">
+                <a href="/">Accueil</a>
+                <a href="/accounts/logout/">Déconnexion</a>
+            </nav>
+        </header>
+
+        <main style="padding:16px;max-width:900px;margin:0 auto">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer style="padding:12px;border-top:1px solid #ddd;text-align:center;color:#666">
+            © {{ now|date:"Y" }} QuantApp — Tous droits réservés
+        </footer>
+    </body>
+</html>

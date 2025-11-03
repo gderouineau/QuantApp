@@ -1,0 +1,242 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block content %}
+<h2 class="main-title">Graphique — {{ symbol }}</h2>
+
+<form method="get" action="" class="flex items-center gap-2" style="margin-bottom:12px;">
+  <input list="assets" type="text" id="symbol-input" name="symbol" value="{{ symbol }}" placeholder="Symbole (ex: AAPL, HO.PA)"
+         class="input" style="min-width: 220px;">
+  <datalist id="assets"></datalist>
+
+  <select name="tf" id="tf-select" class="input">
+    <option value="1D" {% if request.GET.tf == "1D" or not request.GET.tf %}selected{% endif %}>Daily</option>
+    <option value="1W" {% if request.GET.tf == "1W" %}selected{% endif %}>Weekly</option>
+  </select>
+
+  <button class="btn" type="submit">Charger</button>
+
+  <div class="ml-4" style="display:inline-flex; gap:6px;">
+    <button class="btn" type="button" data-range="1M">1M</button>
+    <button class="btn" type="button" data-range="3M">3M</button>
+    <button class="btn" type="button" data-range="YTD">YTD</button>
+    <button class="btn" type="button" data-range="1Y">1Y</button>
+    <button class="btn" type="button" data-range="MAX">Max</button>
+  </div>
+</form>
+
+<div id="notice" style="display:none; margin-bottom:10px;"></div>
+<div id="chart" style="height: 560px; border:1px solid #ddd; border-radius: 12px;"></div>
+
+<!-- ECharts (no logo) -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+(function () {
+  // --- Elements & chart init
+  const elChart = document.getElementById('chart');
+  const elNotice = document.getElementById('notice');
+  const chart = echarts.init(elChart, null, { renderer: 'canvas' });
+
+  // --- Helpers notice
+  function showNotice(msg, kind="info") {
+    elNotice.style.display = 'block';
+    elNotice.style.padding = '8px 10px';
+    elNotice.style.borderRadius = '8px';
+    elNotice.style.border = '1px solid #ddd';
+    elNotice.style.background = (kind === 'error') ? '#ffebee' : '#fff';
+    elNotice.textContent = msg;
+  }
+  function clearNotice(){ elNotice.style.display = 'none'; elNotice.textContent = ""; }
+
+  // --- API calls
+  async function fetchBars(symbol, tf) {
+    const url = `{% url 'market_data:bars_json' %}?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(tf)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("API error " + res.status);
+    return res.json();
+  }
+  async function searchAssets(q) {
+    const url = `{% url 'market_data:assets_search' %}?q=${encodeURIComponent(q||"")}`;
+    const res = await fetch(url);
+    if (!res.ok) return { results: [] };
+    return res.json();
+  }
+
+  // --- State (déclarés, mais remplis dans loadAndDraw)
+  let kdata = [];   // [[tMs, open, close, low, high], ...]
+  let vdata = [];   // [[tMs, volume], ...]
+  let times = [];   // [tMs, ...]
+
+  // --- Render chart
+  function render() {
+    const option = {
+      animation: false,
+      backgroundColor: '#ffffff',
+      grid: [
+        { left: 48, right: 32, top: 18,  height: 320 },
+        { left: 48, right: 32, top: 360, height: 120 }
+      ],
+      xAxis: [
+        { type: 'time', boundaryGap: true, axisLine:{lineStyle:{color:'#ddd'}}, axisTick:{show:false}, axisLabel:{color:'#666'} },
+        { type: 'time', boundaryGap: true, axisLine:{lineStyle:{color:'#ddd'}}, axisTick:{show:false}, axisLabel:{color:'#666'}, gridIndex:1 }
+      ],
+      yAxis: [
+        { scale:true, axisLine:{lineStyle:{color:'#ddd'}}, axisTick:{show:false}, splitLine:{lineStyle:{color:'#f0f0f0'}}, axisLabel:{color:'#666'} },
+        { scale:true, axisLine:{lineStyle:{color:'#ddd'}}, axisTick:{show:false}, splitLine:{lineStyle:{color:'#f0f0f0'}}, axisLabel:{color:'#666'}, gridIndex:1 }
+      ],
+      dataZoom: [
+        { type:'inside', xAxisIndex:[0,1] },
+        { type:'slider', xAxisIndex:[0,1], height:18, bottom:8 }
+      ],
+      tooltip: {
+        trigger:'axis',
+        axisPointer:{ type:'cross' },
+        backgroundColor:'#fff', borderColor:'#eee', borderWidth:1, textStyle:{color:'#111'},
+        formatter: (params) => {
+          const pK = params.find(p => p.seriesName === 'Cours');
+          const pV = params.find(p => p.seriesName === 'Volume');
+          if (!pK) return '';
+          const tms = pK.value[0];
+          const dts = echarts.format.formatTime('yyyy-MM-dd', tms);
+          const o = pK.value[1], c = pK.value[2], l = pK.value[3], h = pK.value[4];
+          const vol = pV ? (pV.value[1] || 0) : 0;
+          return `<div style="font-weight:600;margin-bottom:6px">${dts}</div>
+                  <div>O: ${o}  H: ${h}  L: ${l}  C: ${c}</div>
+                  <div style="color:#666">Vol: ${Number(vol).toLocaleString()}</div>`;
+        }
+      },
+      series: [
+        {
+          name:'Cours',
+          type:'candlestick',
+          data: kdata,
+          // x = colonne 0 (time), y = colonnes 1..4 (O,C,L,H)
+          encode: { x: 0, y: [1,2,3,4] },
+          // Vert (hausse), rouge (baisse)
+          itemStyle:{
+            color: '#2ecc71',       // corps haussier
+            color0: '#e53935',      // corps baissier
+            borderColor: '#2ecc71',
+            borderColor0: '#e53935'
+          }
+        },
+        {
+          name:'Volume',
+          type:'bar',
+          data: vdata,
+          encode: { x: 0, y: 1 },
+          xAxisIndex:1, yAxisIndex:1,
+          itemStyle:{ opacity:0.8 }
+        }
+      ]
+    };
+    chart.setOption(option, true);
+  }
+
+  // --- Ranges (via dataZoom)
+  function setRange(range) {
+    if (times.length === 0) return;
+    const total = times.length;
+
+    let keep;
+    if (range === '1M') keep = 22;
+    else if (range === '3M') keep = 66;
+    else if (range === '1Y') keep = 252;
+    else if (range === 'YTD') {
+      const year = new Date().getFullYear();
+      const yStartIdx = times.findIndex(ts => (new Date(ts)).getFullYear() === year);
+      keep = (yStartIdx === -1) ? total : (total - yStartIdx);
+    } else { // MAX
+      keep = total;
+    }
+
+    keep = Math.max(5, Math.min(keep, total));
+    const startIdx = Math.max(0, total - keep);
+    const startPct = startIdx / total * 100;
+
+    chart.setOption({
+      dataZoom: [
+        { start: startPct, end: 100 },
+        { start: startPct, end: 100 }
+      ]
+    });
+  }
+
+  // --- Load data and draw
+  async function loadAndDraw(symbol, tf) {
+    clearNotice();
+    chart.showLoading({ text: 'Chargement…' });
+    try {
+      const js = await fetchBars(symbol, tf);
+      const rows = js.data || [];
+      if (!rows.length) {
+        chart.clear();
+        const hint = js.hint === 'not_found' ? " (symbole introuvable — utilise l’autocomplete)" : "";
+        showNotice(`Aucune donnée pour ${symbol} (${tf})${hint}.`, "error");
+        chart.hideLoading();
+        return;
+      }
+      // Build series as ARRAYS: [timeMs, open, close, low, high] and [timeMs, vol]
+      kdata = rows.map(d => [d.time * 1000, d.open, d.close, d.low, d.high]);
+      vdata = rows.map(d => [d.time * 1000, d.volume ?? 0]);
+      times = rows.map(d => d.time * 1000);
+
+      // (debug) décommente si besoin :
+      // console.log('rows sample', rows.length, rows[0]);
+      // console.log('kdata sample', kdata.length, kdata[0]);
+      // console.log('vdata sample', vdata.length, vdata[0]);
+
+      render();
+      chart.hideLoading();
+      chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 }); // Fit (MAX)
+    } catch (e) {
+      chart.clear();
+      showNotice("Erreur: " + (e && e.message ? e.message : e), "error");
+      chart.hideLoading();
+      console.error(e);
+    }
+  }
+
+  // --- Autocomplete (datalist)
+  (function attachAutocomplete(){
+    const input = document.getElementById('symbol-input');
+    const list  = document.getElementById('assets');
+
+    async function refreshList(q){
+      const js = await searchAssets(q);
+      list.innerHTML = "";
+      (js.results || []).forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.symbol;
+        opt.label = r.y_symbol ? `${r.symbol} · ${r.y_symbol}` : r.symbol;
+        list.appendChild(opt);
+      });
+    }
+    input.addEventListener('input', (e) => {
+      const q = e.target.value;
+      if ((q||"").length >= 1) refreshList(q);
+    });
+    // suggestions initiales
+    refreshList("");
+  })();
+
+  // --- Range buttons
+  document.querySelectorAll('button[data-range]').forEach(btn => {
+    btn.addEventListener('click', () => setRange(btn.getAttribute('data-range')));
+  });
+
+  // --- Initial load
+  const initialSymbol = "{{ symbol|escapejs }}";
+  const initialTf = "{{ request.GET.tf|default:'1D' }}";
+  loadAndDraw(initialSymbol, initialTf);
+
+  // --- Resize
+  window.addEventListener('resize', () => chart.resize());
+})();
+</script>
+
+<style>
+.btn { padding: 6px 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; }
+.btn:hover { background: #f6f6f6; }
+.input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 8px; }
+</style>
+{% endblock %}
