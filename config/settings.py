@@ -48,8 +48,12 @@ INSTALLED_APPS = [
 
     # project
     'core',
-    'providers',
+    'indicators',
     'market_data',
+    'portfolios',
+    'providers',
+    'strategies',
+
 ]
 
 

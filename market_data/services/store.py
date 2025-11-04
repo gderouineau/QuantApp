@@ -30,3 +30,12 @@ def upsert_datafile(asset: Asset, kind: str, path: Path, row_count: int, last_da
     df.file_size = os.path.getsize(path) if Path(path).exists() else 0
     df.save()
     return df
+
+def read_parquet(pathlike) -> pd.DataFrame:
+    """
+    Accepte str ou Path. Retourne un DataFrame vide si le fichier n'existe pas.
+    """
+    p = Path(pathlike) if not isinstance(pathlike, Path) else pathlike
+    if not p.exists():
+        return pd.DataFrame()
+    return pd.read_parquet(p)

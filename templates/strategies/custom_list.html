@@ -1,0 +1,69 @@
+{% extends "base_admin.html" %}
+
+{% block head_title %}Stratégies Custom — Admin{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/strategies/custom/">Stratégies</a></li>
+<li>Custom</li>
+{% endblock %}
+
+{% block page_actions %}
+<a class="btn" href="{% url 'strategies:custom_create' %}">+ Nouvelle stratégie</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="inline-form">
+            <input type="text" class="input" name="q" value="{{ request.GET.q }}" placeholder="Rechercher par nom…">
+            <button class="btn" type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Active</th>
+                    <th>Poids</th>
+                    <th>Créée</th>
+                    <th>Actions</th>
+                    <th>Test rapide</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for s in strategies %}
+                <tr id="row-{{ s.id }}">
+                    <td>{{ s.name }}</td>
+                    <td>
+                        {% if s.is_active %}
+                            <span class="tag success">Oui</span>
+                        {% else %}
+                            <span class="tag">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ s.weight }}</td>
+                    <td>{{ s.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="actions">
+                        <a class="btn" href="{% url 'strategies:custom_edit' s.id %}">Éditer</a>
+                        <a class="btn danger" href="{% url 'strategies:custom_delete' s.id %}">Supprimer</a>
+                    </td>
+                    <td>
+                        <div class="inline-form" hx-target="#test-out-{{ s.id }}" hx-swap="innerHTML">
+                            <input type="text" class="input" name="symbol" placeholder="AAPL, AIR.PA …">
+                            <button class="btn" 
+                                    hx-get="{% url 'strategies:custom_test' s.id %}" 
+                                    hx-include="closest .inline-form">Tester</button>
+                        </div>
+                        <div id="test-out-{{ s.id }}" class="mono small muted" style="max-height:180px; overflow:auto; margin-top:6px;"></div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">Aucune stratégie custom.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

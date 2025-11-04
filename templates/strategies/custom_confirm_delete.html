@@ -1,0 +1,20 @@
+{% extends "base_admin.html" %}
+
+{% block head_title %}Supprimer stratégie — Admin{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="{% url 'strategies:custom_list' %}">Stratégies</a></li>
+<li>Supprimer</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h3>Confirmer la suppression</h3>
+    <p>Voulez-vous vraiment supprimer « <strong>{{ object.name }}</strong> » ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn danger" type="submit">Supprimer</button>
+        <a class="btn" href="{% url 'strategies:custom_list' %}">Annuler</a>
+    </form>
+</div>
+{% endblock %}

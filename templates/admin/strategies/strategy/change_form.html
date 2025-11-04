@@ -1,0 +1,40 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="submit-row" style="margin-top:24px">
+        <h3>Tester la stratégie</h3>
+        {% if admin_test_help %}{{ admin_test_help|safe }}{% endif %}
+
+        <div style="display:flex;gap:8px;align-items:center;margin:8px 0;">
+            <label for="test-symbol">Symbole</label>
+            <input id="test-symbol" type="text" placeholder="AAPL ou AIR.PA" style="min-width:200px;">
+            <button type="button" class="button" id="btn-test">Tester</button>
+        </div>
+
+        <pre id="test-output" style="max-height:320px;overflow:auto;background:#111;color:#eee;padding:12px;border-radius:6px;"></pre>
+    </div>
+
+    <script>
+    (function() {
+        const btn = document.getElementById('btn-test');
+        const out = document.getElementById('test-output');
+        const sym = document.getElementById('test-symbol');
+
+        btn?.addEventListener('click', async () => {
+            out.textContent = '⏳ Test en cours...';
+            const url = window.location.pathname.replace(/\/change\/?$/, '/test/');
+            const qs = '?symbol=' + encodeURIComponent(sym.value || '');
+            try {
+                const res = await fetch(url + qs, {credentials:'same-origin'});
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                out.textContent = 'Erreur: ' + e;
+            }
+        });
+    })();
+    </script>
+{% endblock %}
