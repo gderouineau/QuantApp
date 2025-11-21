@@ -1,3 +1,5 @@
+# market_data/management/commands/seed_assets.py
+
 from __future__ import annotations
 from django.core.management.base import BaseCommand
 from market_data.models import Asset

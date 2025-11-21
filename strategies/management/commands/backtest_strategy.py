@@ -1,4 +1,5 @@
-# strategies/management/commands/backtest_strategy.py
+# app: strategies
+# file: strategies/management/commands/backtest_strategy.py
 
 from django.core.management.base import BaseCommand
 import pandas as pd
@@ -8,7 +9,11 @@ from strategies.relative_strength import RelativeStrengthStrategy
 from strategies.custom_strategy import CustomStrategy
 from strategies.golden_cross import GoldenCrossStrategy
 from strategies.volume_breakout import VolumeBreakoutStrategy
+
+# Simulateur existant (fallback)
 from strategies.services.backtest import simulate_one_symbol, BTParams
+# Nouveau simulateur SL/TP avancé
+from strategies.services.sltp import simulate_one_symbol_sltp
 
 from indicators.models import Indicator
 from market_data.services.store import read_parquet, bars_path
@@ -33,7 +38,6 @@ class Command(BaseCommand):
         parser.add_argument("--warmup", type=int, default=252)
 
     def handle(self, *args, **opts):
-        # argparse convertit --strategy-id en 'strategy_id'
         strategy_id = opts["strategy_id"]
         symbols_arg = opts["symbols"]
         capital = float(opts["capital"])
@@ -57,6 +61,9 @@ class Command(BaseCommand):
         syms = [x.strip() for x in symbols_arg.split(",") if x.strip()]
         totals = {"n_trades": 0, "sum_R": 0.0, "symbols": []}
 
+        # Active SLTP si présent dans parameters
+        sltp_cfg = (s.parameters or {}).get("sltp")
+
         for sym in syms:
             dfp = read_parquet(bars_path(sym, "1D"))
             if dfp is None or dfp.empty:
@@ -69,14 +76,26 @@ class Command(BaseCommand):
             if not dfi.empty:
                 dfi.set_index("date", inplace=True)
 
-            res = simulate_one_symbol(dfp, dfi, strat, params, warmup_bars=warmup_bars)
+            if sltp_cfg:
+                res = simulate_one_symbol_sltp(
+                    df_prices=dfp,
+                    df_ind=dfi,
+                    strat=strat,
+                    initial_capital=capital,
+                    risk_per_trade=risk,
+                    sltp_cfg=sltp_cfg,
+                    warmup_bars=warmup_bars,
+                )
+            else:
+                res = simulate_one_symbol(dfp, dfi, strat, params, warmup_bars=warmup_bars)
+
             n = res["n_trades"]
             avg_R = res["avg_R"]
             wr = res["win_rate"]
             eq = res["equity_final"]
 
             totals["n_trades"] += n
-            totals["sum_R"] += sum(t["r_multiple"] for t in res["trades"])
+            totals["sum_R"] += sum(t.get("r_multiple", 0.0) for t in res.get("trades", []))
             totals["symbols"].append({
                 "symbol": sym,
                 "n_trades": n,

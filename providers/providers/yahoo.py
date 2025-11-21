@@ -1,4 +1,6 @@
+# providers/providers/yahoo.py
 from __future__ import annotations
+
 from datetime import date
 from typing import Iterable, Optional, Dict
 import pandas as pd
@@ -14,28 +16,46 @@ def _clean_bars_df(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return df
 
+    # Toujours travailler sur une copie pour éviter SettingWithCopyWarning
+    df = df.copy()
+
     # S'assurer que l'index est un DatetimeIndex
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index, errors="coerce")
-    # Si timezone-aware -> convertir UTC puis rendre naïf (pour l'API qui tz_localize ensuite)
+
+    # Si timezone-aware -> convertir UTC puis rendre naïf
     if isinstance(df.index, pd.DatetimeIndex) and df.index.tz is not None:
         df.index = df.index.tz_convert("UTC").tz_localize(None)
 
-    # Forcer numérique
+    # Forcer numérique (tolérant)
     for col in ["open", "high", "low", "close", "adj_close", "volume", "dividends", "splits"]:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            df.loc[:, col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Drop lignes invalides (si un OHLC est NaN) — source des erreurs côté chart
+    # Fallback adj_close si absent/NaN
+    if "adj_close" not in df.columns and "close" in df.columns:
+        df.loc[:, "adj_close"] = df["close"]
+    elif "adj_close" in df.columns and "close" in df.columns:
+        # Remplace adj_close NaN par close si besoin
+        mask = df["adj_close"].isna()
+        if mask.any():
+            df.loc[mask, "adj_close"] = df.loc[mask, "close"]
+
+    # Drop lignes invalides si un OHLC est NaN
     subset = [c for c in ["open", "high", "low", "close"] if c in df.columns]
     if subset:
         df = df.dropna(subset=subset, how="any")
 
-    # Volume NaN -> 0
+    # Volume NaN -> 0 (puis int64)
     if "volume" in df.columns:
-        df["volume"] = df["volume"].fillna(0)
+        df.loc[:, "volume"] = df["volume"].fillna(0).astype("int64")
 
-    # Tri + dédup
+    # Typage OHLC en float64
+    for col in ["open", "high", "low", "close", "adj_close"]:
+        if col in df.columns:
+            df.loc[:, col] = df[col].astype("float64")
+
+    # Tri + dédup + nom d'index
     df = df[~df.index.duplicated(keep="last")].sort_index()
     df.index.name = "date"
     return df

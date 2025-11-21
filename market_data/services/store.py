@@ -1,3 +1,5 @@
+# market_data/services/store.py
+
 from __future__ import annotations
 import os
 from pathlib import Path
@@ -5,7 +7,7 @@ import pandas as pd
 from django.conf import settings
 from market_data.models import Asset, DataFile
 
-DIR_MAP = {"1D": "1d", "1W": "1w"}
+DIR_MAP = {"1D": "1d", "1W": "1w", "1H": "1h"}
 
 def bars_path(symbol: str, timeframe: str) -> Path:
     base = Path(settings.MARKET_DATA_DIR) / DIR_MAP[timeframe]

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'core',
     'indicators',
     'market_data',
+    'neuronal_strategy',
     'portfolios',
     'providers',
     'strategies',

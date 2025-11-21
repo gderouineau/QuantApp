@@ -23,6 +23,20 @@ class Strategy(models.Model):
     code = models.TextField(blank=True, help_text="Fonction evaluate(df_prices, df_indicators, params) -> dict")
 
     parameters = models.JSONField(default=dict)
+    optimize_parameters = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "Plan d’optimisation (JSON). Exemple minimal : "
+            "{\"grid\": {"
+            "  \"trend_ma\": {\"ranges\": [[120,300]], \"step\": 10}, "
+            "  \"rsi_max\": {\"values\": [35,40,45,50,55]}"
+            "}, "
+            "\"constraints\": [{\"lt\": [\"pullback_ma\", \"trend_ma\"]}], "
+            "\"budget\": {\"n_trials\": 120, \"n_folds\": 3, \"step\": 126, \"min_train\": 630, \"sample_n_symbols\": 20}"
+            "}"
+        ),
+    )
     weight = models.FloatField(default=1.0)
     is_active = models.BooleanField(default=True)
 
@@ -37,6 +51,8 @@ class Strategy(models.Model):
     max_memory_mb = models.PositiveIntegerField(default=256)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    sltp_preset = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

@@ -8,7 +8,7 @@ from django.db.models import Q
 
 from market_data.models import Asset
 
-DIR_MAP = {"1D": "1d", "1W": "1w"}
+DIR_MAP = {"1D": "1d", "1W": "1w", "1H": "1h"}
 
 
 def bars_json(request):

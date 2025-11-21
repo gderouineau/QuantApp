@@ -28,5 +28,6 @@ urlpatterns = [
 
     path("market-data/", include("market_data.urls", namespace="market_data")),
     path("strategies/", include("strategies.urls", namespace="strategies")),
+    path("portfolios/", include("portfolios.urls")),
 
 ]

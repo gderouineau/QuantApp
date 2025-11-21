@@ -46,6 +46,14 @@
                 {{ form.parameters_text.errors }}
             </div>
 
+            <!-- NOUVEAU : Plan d’optimisation -->
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="id_optimize_parameters_text">Plan d’optimisation (JSON)</label>
+                {{ form.optimize_parameters_text }}
+                <div class="help">{{ form.fields.optimize_parameters_text.help_text }}</div>
+                {{ form.optimize_parameters_text.errors }}
+            </div>
+
             <div class="form-group" style="grid-column: 1 / -1;">
                 <label for="{{ form.code.id_for_label }}">Code Python</label>
                 {{ form.code }}

@@ -1,3 +1,5 @@
+# market_data/management/commands/ingest_daily.py
+
 from __future__ import annotations
 import time
 from datetime import date
@@ -8,6 +10,7 @@ from django.conf import settings
 from providers.providers.registry import get_provider, provider_chain
 from market_data.models import Asset, IngestionRun
 from market_data.services.store import bars_path, write_parquet, upsert_datafile
+
 
 class Command(BaseCommand):
     help = "Ingestion daily (1D) via providers chain; écrit Parquet + DB DataFile/Run."
